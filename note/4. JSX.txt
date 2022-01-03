@@ -1,0 +1,161 @@
+# JSX의 기본 규칙 알아보기
+
+function App() {
+  return (
+    <div>
+      <Hello/>
+      <Hello/>
+      <Hello/>
+    </div>
+  );
+}
+
+
+이것은 자바스크립트이다.
+
+https://babeljs.io/
+에서
+Try it out을 통해
+
+--
+(
+<div>
+  <b>Hello,</b> <span>React</span>
+</div>
+)
+--
+이런 HTML코드를 넣으면
+--
+"use strict";
+
+/*#__PURE__*/
+React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "Hello,"), " ", /*#__PURE__*/React.createElement("span", null, "React"));
+--
+이런식으로 자바스크립트 문법으로 만들어진다.
+매번 이렇게 만드는것은 어려우니까,
+React.createElement를 통해 컴포넌트를 만들어변환된다.
+
+
+JSX라는 문법을 사용하여,
+XML형태로 선언하면
+이것을 자바스크립트 형태로 변환하게끔
+Babel이라는 도구가 대신 해주는 것.
+
+그럴려면 규칙들을 지켜야한다.
+
+1. 태그는 꼭 닫아줘야한다.
+    <input />
+    <img />
+    <br/>
+    셀프클로징 태그형태로 사용해준다.
+
+2. 2개이상의 태그는 하나의 태그로 감싸줘야한다.
+   <></> 비어있는 이름의 태그인 "플래그먼트"를 사용한다.
+
+function App() {
+  return (
+      <Hello/>
+      <div>안녕</div>
+  );
+}
+
+오류가 난다.
+
+function App() {
+  return (
+    <div>
+      <Hello/>
+      <div>안녕</div>
+    </div>
+  );
+}
+
+이렇게 쓰거나
+
+function App() {
+  return (
+    <>
+      <Hello/>
+      <div>안녕</div>
+    </>
+  );
+}
+
+이렇게 쓴다.
+
+
+function App() {
+  return <>
+      <Hello/>
+      <div>안녕</div>
+    </>  
+}
+
+() 괄호 없어도 오류가 없이 잘 작동한다.
+() 괄호는 가독성을 위해 작성.
+
+
+3. JSX 내부에서 자바스크립트 사용하는 방법.
+function App() {
+  const name = 'react';
+  return (
+    <>
+      <Hello/>
+      <div>{name}</div>
+    </>
+  );
+}
+
+값을 보여주기위해 {}중괄호를 이용.
+
+
+4.스타일과 클래스네임
+
+
+function App() {
+  const name = 'react';
+  return (
+    <>
+      <Hello/>
+      <div style="background:black;">{name}</div>
+    </>
+  );
+}
+
+작동안함.
+
+function App() {
+  const name = 'react';
+  const style = {
+    backgroundColor : 'black',
+    color : 'aqua',
+    fontSize : 24,//단위는 기본 px
+    padding:'1rem'
+  }
+  
+  return (
+    <>
+      <Hello/>
+      <div style={style}>{name}</div>
+    </>
+  );
+}
+
+객체로 지정해줘야한다.
+class도 className을 쓴다.
+css도 import 해줘야 사용된다.
+
+import './App.css'
+<div className="gray-box"></div>
+
+5.주석
+JSX내부에선
+
+return (
+    <div>
+        {/*주석은 이렇게*/}
+        <input
+            //또는 이렇게
+        />
+    </div>
+)

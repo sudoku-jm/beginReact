@@ -1,0 +1,119 @@
+useRef는 
+특정DOM을 선택할 때도 쓰지만, 컴포넌트가 변할 때마다 기억하는 변수 값으로도 사용될 수 있다.
+
+다양한 경우에 쓴다.
+setTimeout, setInertval의 id,
+외부 라이브러리를 사용하여 생성된 인스턴스를 담을 때,
+Scroll위치를 알고 있어야할 때...
+
+useRef는 바뀌어도 컴포넌트가 리렌더링 되지 않는다는 것!
+
+(UserList2.js)
+--
+import React from 'react';
+import UserList2 from './UserList2';
+
+
+const App = () => {
+  const users = [
+    {
+        id:1,
+        username:'velopert',
+        email : 'public.velopoert@gamil.com'
+    },
+    {
+        id:2,
+        username:'tester',
+        email : 'tester@example.com'
+    },
+    {
+        id:3,
+        username:'liz',
+        email : 'liz@example.com'
+    },
+];
+
+
+  return (
+    <>
+      <UserList2 users={users}/>
+    </>
+  );
+};
+
+export default App;
+
+--
+
+user 데이터를 UserList2로 내려줌.
+
+--
+import React from 'react'
+
+function User({user}){
+    return(
+        <div>
+            <b>{user.username}</b> <span>{user.email}</span>
+        </div>
+    )
+}
+
+function UserList2 ({users}) {
+     //App.js에서 받은 users 데이터.
+
+    return(
+        <>
+            {
+             users.map(
+                (user,index) => (<User key={index} user={user}/>)
+             )
+            }
+        </>
+    )
+}
+
+export default UserList2;
+
+--
+
+import React, {useRef} from 'react';
+import UserList2 from './UserList2';
+
+
+const App = () => {
+  const users = [
+    {
+        id:1,
+        username:'velopert',
+        email : 'public.velopoert@gamil.com'
+    },
+    {
+        id:2,
+        username:'tester',
+        email : 'tester@example.com'
+    },
+    {
+        id:3,
+        username:'liz',
+        email : 'liz@example.com'
+    },
+];
+
+const nextId = useRef(4);
+const onCreate = () => {
+  console.log(nextId.current); //4
+
+  nextId.current += 1 ;
+  //onCreate 함수가 실핼 될 때마다 내용이 실행되고 nextId 기존 값에 +1 이 된다.
+  //값이 바뀐다고 페이지가 리렌더링 되거나 하지 않는다.
+}
+
+
+  return (
+    <>
+      <UserList2 users={users}/>
+    </>
+  );
+};
+
+export default App;

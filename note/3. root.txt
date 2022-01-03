@@ -1,0 +1,22 @@
+index.js를 열어보면
+
+
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+
+
+ReactDOM을 불러온다.
+document.getElementById('root')
+id가 root인것을 불러오겠다.
+
+id root는 어디?
+
+public폴더안의 index.html확인
+<div id="root"></div>가 있다.
+
+리액트 컴포넌트가 랜더링 될때는
+App.js가 root에 들어간다.

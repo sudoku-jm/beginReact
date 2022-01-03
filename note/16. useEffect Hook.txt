@@ -1,0 +1,49 @@
+(UserList3.js, CreateUser2, App.js)
+useEffect.js
+
+리액트 컴포넌트가 화면에 나타날 때, 사라질 때 특정작업을 할 수 있다.
+컴포넌트의 props의 상태가 바뀌어서 업데이트 될 때에도 작업을 할 수 있다. 업데이트되기 전에도 할 수 있다.
+추가적으로 리로딩 될 때에도 작업을 할 수 있다.
+
+마운트 : 나타날 때
+언마운트 : 없어질 때
+
+--
+(UserList3.js)
+import React, {useEffect} from 'react'
+
+
+useEffect(() => {
+    console.log('컴포넌트가 화면에 나타남');
+    //props -> state
+    // REST API
+    // D3 Video.js
+    // setInterval, setTimeout
+    return () => {
+        //clearInterval, clearTimeout
+        // 라이브러리 인스턴스 제거
+        console.log('컴포넌트가 화면에서 사라짐');
+    }
+},[]);
+
+--
+useEffect(() => {
+        console.log(user);
+},[user]);
+
+
+[user]가 마운트 될 때(나타날 때), 업데이트 될 때
+
+useEffect(() => {
+    console.log('user 값이 설정 됨');
+    console.log(user);
+    return () => {
+        console.log('user값이 바뀌기 전');
+        console.log(user);
+    }
+},[user]);
+
+user의 값이 바뀌면 콘솔창에 'user값이 바뀌기 전'이 나오고 바로 'user값이 설정 됨'도 나온다.
+
+[]안에 값을 넣어주는게 좋다.
+넣어야만 최신의 값을 가리킨다.

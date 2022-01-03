@@ -1,0 +1,74 @@
+props = properties를 줄인 말
+
+const App = () => {
+  return (
+    <div>
+        <Hello name="react" color="red"/>
+    </div>
+  );
+};
+
+-
+function Hello(props) {
+    console.log(props)
+    //{name: 'react', color: 'red'}
+    return <div style={{color:props.color}}>안녕하세요{props.name}</div>;
+}
+
+====
+구조분해할당(비구조할당)
+
+function Hello({color, name}) {
+    return <div style={{color}}>안녕하세요{name}</div>;
+}
+====
+defaultProps
+
+const App = () => {
+  return (
+    <>
+        <Hello name="react" color="red"/>
+        <Hello color="pink"/>
+    </>
+  );
+};
+
+name값 생략하고 전달.
+
+function Hello({color, name}) {
+    return <div style={{color}}>안녕하세요{name}</div>;
+}
+
+Hello.defaultProps = {
+    name : '이름없음'
+}
+
+이렇게 만들어주면
+name값에 기본값으로 '이름없음'이 들어간다.
+
+===
+props Children (Wrapper.js)
+
+<Wrapper>
+    <Hello name="react" color="red"/>
+    <Hello color="pink"/>
+</Wrapper>
+
+컴포넌트 안에 컴포넌트를 사용할 때.
+
+
+const Wrapper = ({children}) => {
+    const style = {
+        border: '2px solid black',
+        padding : 16
+    }
+    return (
+        <div style={style}>{children}</div>
+    );
+};
+
+export default Wrapper;
+
+{children}을 써주면 내부 컴포넌트도 보인다.
+Wrapper는 children props를 받아와서
+ <div style={style}>{children}</div> 사용해준것.

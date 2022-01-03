@@ -1,0 +1,95 @@
+(InputSample2.js)
+
+const [inputs,setInputs] = useState({
+        name : '',
+        nickname: '',
+    });
+
+객체 형태로 만들어준다.
+
+const {name, nickname} = inputs;
+
+쉽게 쓸 수 있도록 비구조할당 해준다.
+
++
+ <input name="name" placeholder="이름" onChange={onChange} />
+<input name="nickname" placeholder="닉네임" onChange={onChange} />
+name값을 넣어준다.
+
++
+onChange에 e.target.value 했을 때 해당 value값이 나왔듯이
+e.target.name을 하면 해당 input의 name값을 알 수 있다.
+
+[방법1]
+const onChange = (e) => {
+        //value값과 name값을 미리 추출
+        const {name, value} = e.target;
+        //e.target을 2번 안써도 됨
+
+        // console.log(e.target.name);
+        // console.log(e.target.value);
+
+        //[방법1]
+        //기존 내용 복사
+        const nextInputs = {
+            ...inputs,
+            // 내용 덮어씌우기
+            [name] : value,
+            //[]는 문자 자체의 name이 들어가므로 대괄호 씌워준다.
+        }
+        //새로운 상태로 업데이트
+        setInputs(nextInputs);        
+    }
+
+[방법2]
+const onChange = (e) => {
+        //value값과 name값을 미리 추출
+        const {name, value} = e.target;
+        //e.target을 2번 안써도 됨
+
+        // console.log(e.target.name);
+        // console.log(e.target.value);
+
+        setInputs ({
+            ...inputs,
+            // 내용 덮어씌우기
+            [name] : value,
+            //[]는 문자 자체의 name이 들어가므로 대괄호 씌워준다.
+        })
+    
+    }
+
+
+--
+초기화
+ const onReset = () => {
+        //초기화
+        setInputs ({
+            name :'',
+            nickname : ''
+        })
+    }
+--
+input value 지정
+<input 
+    name="name" 
+    placeholder="이름" 
+    onChange={onChange} 
+    value={name}
+/>
+<input 
+    name="nickname" 
+    placeholder="닉네임" 
+    onChange={onChange} 
+    value={nickname} 
+/>
+
+--
+객체 상태를 업데이트 할 때는
+...객체명,
+으로 객체를 복사하고나서,
+특정 값을 덮어씌워 상태 업데이트를 한다.
+
+기존 객체의 상태를 보존하고, 위에 덮어씌우는것 = 불변성을 지킨다.
+
+불병성을 지켜야 컴포넌트 업데이트 성능을 최적화할 수 있다.

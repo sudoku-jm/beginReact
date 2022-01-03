@@ -1,0 +1,289 @@
+기존 useState로 만들었던 것을
+useReducer로 만들기.
+
+(App.js)(CreateUser3.js)(UserList4.js)
+초기상태를 APP 컴포넌트 밖에서 선언해주기
+
+
+
+const initialState = {
+  inputs : {
+    username : '',
+    email : ''
+  },
+  users : [
+    {
+      id:1,
+      username:'velopert',
+      email : 'public.velopoert@gamil.com',
+      active : true
+    },
+    {
+        id:2,
+        username:'tester',
+        email : 'tester@example.com',
+        active : false
+    },
+    {
+        id:3,
+        username:'liz',
+        email : 'liz@example.com',
+        active : false
+    }
+  ]
+}
+
+
+const App = () => {
+    ...내용 삭제 후 다시 작성.
+}
+
+
+
+const App = () => {
+  return(
+    <>
+      <CreateUser3/>
+      <UserList4 users={[]}/>
+      <div>활성 사용자 수 : 0</div>
+    </>
+  )
+}
+
+
+--
+useReducer 불러와주기
+
+import React, {useRef, useReducer, useMemo, useCallback} from 'react';
+--
+reducer 틀 만들어주기
+
+function reducer(state, action){
+  return state;
+}
+
+const App = () => {
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+  //initialState 초기값 선언한 것을 불러온다.
+  
+  return(
+    <>
+      <CreateUser3/>
+      <UserList4 users={[]}/>
+      <div>활성 사용자 수 : 0</div>
+    </>
+  )
+}
+
+initialState내부값 비구조 할당으로 선언한 다음
+컴포넌트에 props로 전달.
+
+const {users} = state;
+const {username, email} = state.inputs;
+
+
+return(
+<>
+     <CreateUser3 
+        username={username}
+        email = {email} 
+        onChange={onChange}
+      />
+    <UserList4 users={users}/>
+    <div>활성 사용자 수 : 0</div>
+</>
+)
+
+
+--
+onChange구현
+
+//처음부터 useCallback적용해줬다.
+//onChange이벤트
+const onChange = useCallback(e => {
+    const {name, value} = e.target;
+    dispatch({
+        type : 'CHANGE_INPUT', //액션
+        name,
+        value
+    })
+},[])
+
+ <CreateUser3 
+    username={username}
+    email = {email} 
+    onChange={onChange}
+/>
+
+
+function reducer(state, action){
+  switch (action.type){
+    case 'CHANGE_INPUT' : 
+      return {
+        ...state, //기존 상태 들고오고
+        inputs : {//inputs의 값을 덮어쓴다. (불변성을 지키기 위해)
+          ...state.inputs, 
+          [action.name] : action.value // 초기값의 inputs안의 특정값을 바꾼다.
+        }
+      };
+    default : 
+      throw new Error('Unhandled action');
+  }
+}
+---
+onCreate
+
+ //onCreate이벤트
+const nextId = useRef(4);
+
+const onCreate = useCallback(() => {
+    dispatch({
+        type : 'CREATE_USER',
+        user : {
+            id : nextId.current, //useRef로 관리
+            username, //받아온 값 넣어줌
+            email
+        }
+    });
+    nextId.current += 1; //dispatch후 1올림
+},[username,email]);  //해당 함수에서 기존 값 의존하는게 있으니 넣어준다.
+
+
+
+function reducer(state, action){
+  switch (action.type){
+    case 'CHANGE_INPUT' : 
+      return {
+        ...state, //기존 상태 들고오고
+        inputs : {//inputs의 값을 덮어쓴다. (불변성을 지키기 위해)
+          ...state.inputs, 
+          [action.name] : action.value // 초기값의 inputs안의 특정값을 바꾼다.
+        }
+      };
+    case 'CREATE_USER' : 
+      return {
+        inputs : initialState.inputs, //초기값으로 바꿔준다.
+        users : state.users.concat(action.user) 
+        /* 
+          onCreate에서 만들었던
+           user : {
+            id : nextId.current, //useRef로 관리
+            username, //받아온 값 넣어줌
+            email
+          }
+        해당 user를 추가해준다.
+        */
+      };
+    default : 
+      // throw new Error('Unhandled action');
+      return state;
+  }
+}
+
+기존에 user데이터 추가 따로,
+input 초기화 따로 하던걸 한꺼번에 처리했다.
+
+case 'CREATE_USER' : 
+    return {
+        inputs : initialState.inputs, //초기값으로 바꿔준다.
+        users : state.users.concat(action.user) //추가
+    }
+};
+
+
+<CreateUser2 
+    username={username} 
+    email={email} 
+    onChange={onChange} 
+    onCreate={onCreate} 
+/>
+
+그리고 onCreate를 props로 내려준다.
+
+--
+onToggle 기능, onRemove 기능
+
+case 'TOGGLE_USER' : 
+    return{
+    ...state, //기존 데이터를 들고온뒤 업데이트
+    users : state.users.map(user => 
+        user.id === action.id
+        ?{ ...user, active : !user.active}
+        : user
+        )
+};
+case 'REMOVE_USER' : 
+    return{
+    ...state,
+    users : state.users.filter(user => user.id !== action.id)
+}
+
+
+//onToggle이벤트
+const onToggle = useCallback(id => {
+    dispatch({
+      type : 'TOGGLE_USER',
+      id
+    })
+},[]);
+
+
+//onRemove이벤트
+const onRemove = useCallback(id => {
+    dispatch({
+        type : 'REMOVE_USER',
+        id
+    })
+},[]);
+
+
+ <UserList4 users={users} onToggle={onToggle} onRemove={onRemove}/>
+
+--
+count
+
+function counterActiveUsers(users){
+  console.log('활성 사용자 수를 세는중...');
+  return users.filter(user => user.active===true).length;
+}
+
+
+//활성 사용자 수
+const count = useMemo(() => counterActiveUsers(users),[users])
+
+
+
+<div>활성 사용자 수 : {count}</div>
+--
+연산된 값을 재사용 : useMemo()
+특정 함수를 재사용 : useCallback()
+컴포넌트 렌더링된 것을 재사용 : React.memo()
+
+==
+
+useReducer vs useState
+언제 쓰는가?
+결론 : 정답은 없다.
+
+
+useState : 
+    const [value,setValue] = useState(true)
+    와 같이 관리하는 값이 1개이고,
+    단순 숫자, 문자열, bool값이면
+    useState가 편하다.
+
+useReducer : 
+    관리하는 값이 여러개, 구조가 복잡해지거나
+    users배열에 넣거나 빼거나 바꿀땐
+    useReducer가 편할 수 있다.
+
+
+예)
+
+setUsers(users => users.concat(user));
+setInputs({
+    username : '',
+    email : ''
+})
+와 같이 2개를 써야할 때 useReducer를 쓰면 어떨까?

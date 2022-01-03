@@ -1,0 +1,32 @@
+useRef(InputSample3.js)
+
+
+import React, { useState, useRef } from 'react';
+useRef추가
+
+const nameInput = useRef();
+nameInput이라는 객체가 만들어진다.
+
+이 객체를 선택하고 싶은 DOM에 넣어준다.
+ref={nameInput}
+
+<input 
+    name="name" 
+    placeholder="이름" 
+    onChange={onChange} 
+    value={name}
+    ref={nameInput}
+/>
+
+
+//초기화를 누르면 포커스이동
+const onReset = () => {
+    //초기화
+    setInputs ({
+        name :'',
+        nickname : ''
+    });
+    nameInput.current.focus();
+}
+
+useRef는 항상 current가 따라온다.

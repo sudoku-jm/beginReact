@@ -1,0 +1,85 @@
+useState를 통한 동적 상태 관리.
+(Counter.js)
+
+
+const App = () => {
+  return (
+    <Counter/>
+  );
+};
+
+
+--
+const Counter = () => {
+    return (
+        <div>
+            <h1>0</h1>
+            <button>+1</button>
+            <button>-1</button>
+        </div>
+    );
+};
+---
+Counter.js에서
+button Click시 이벤트가 동작하게끔 만들어준다.
+
+//함수 생성
+const onIncrease = () => {
+        console.log('+1');
+}
+const onDecrease = () => {
+    console.log('-1');
+}
+
+button에서 click이벤트 걸어주기
+<button onClick={onIncrease}>+1</button>
+<button onClick={onDecrease}>-1</button>
+
+//주의
+<button onClick={onIncrease()}>+1</button>
+<button onClick={onDecrease()}>-1</button>
+이렇게 써주면 렌더링되었을 때 호출하는 것.
+페이지 뜰 때 같이 호출되어 버린다.
+
+--
+useState불러오기
+
+import React, {useState} from 'react';
+
+const [number,setNumber] = useState(0)
+number상태를 만들건데 이 상태 값은 0이다.
+setNumber은 이 상태를 바꿔줄 수 있는 함수이다.
+
+import React, {useState} from 'react';
+
+const Counter = () => {
+    const [number,setNumber] = useState(0)
+    const onIncrease = () => {
+        setNumber(number + 1);
+    }
+    const onDecrease = () => {
+        setNumber(number - 1);
+    }
+    return (
+        <div>
+            <h1>{number}</h1>
+            <button onClick={onIncrease}>+1</button>
+            <button onClick={onDecrease}>-1</button>
+        </div>
+    );
+};
+
+export default Counter;
+
+
+--
+업데이트 함수
+//값을 어떻게 할지에 대한 로직을 정의하는 함수를 넣어줄 수도 있다.
+const onIncrease = () => {
+    setNumber(prevNumber => prevNumber + 12)
+}
+const onDecrease = () => {
+    setNumber(prevNumber => prevNumber - 1)
+}
+
+현재 상태를 가지고 와서 => 이렇게 업데이트 하겠다.(=업데이트 함수.최적화와 관련있다.)

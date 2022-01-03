@@ -1,0 +1,108 @@
+(App.js , UserList2.js, CreateUser.js)
+
+리스트 항목 클릭 시, 텍스트 색상 변경.
+
+배열 내부 객체에 항목 추가
+
+App.js
+const [users,setUsers] = useState([
+    {
+        id:1,
+        username:'velopert',
+        email : 'public.velopoert@gamil.com',
+        active : true
+    },
+    {
+        id:2,
+        username:'tester',
+        email : 'tester@example.com',
+        active : false
+    },
+    {
+        id:3,
+        username:'liz',
+        email : 'liz@example.com',
+        active : false
+    },
+]);
+--
+(UserList2.js)
+function User({user, onRemove}){
+    const {username, email, id, active} = user;
+    return(
+        <div>
+            <b style={{
+                color : active ? 'green' : 'black',
+                cursor : 'pointer'
+            }}>
+                {username}
+            </b> 
+            <span>{email}</span>
+            <button onClick={()=>onRemove(id)}>삭제</button>
+        </div>
+    )
+}
+//user에 추가한 active값을 비구조할당에 추가,
+style 추가한다.
+--
+onToggle 함수 구현.
+배열에 있는 특정함수를 업데이트 할 때에도
+map함수를 사용할 수 있다.
+
+//active 토글
+const onToggle = id => {
+  setUsers(users.map(
+    user => user.id === id 
+    ? {...user,active: !user.active} //true
+    : user                          //false
+    ))
+}
+
+
+App.js에도 함수 내려준다.
+
+<UserList2 
+    users={users} 
+    onRemove={onRemove} 
+    onToggle={onToggle} 
+/>
+--
+UserList2.js
+
+function User({user, onRemove, onToggle}){
+    const {username, email, id, active} = user;
+    return(
+        <div>
+            <b 
+            onClick={() => onToggle(id)}
+            style={{
+                color : active ? 'green' : 'black',
+                cursor : 'pointer'
+            }}>
+                {username}
+            </b> 
+            &nbsp;
+            <span>{email}</span>
+            <button onClick={()=>onRemove(id)}>삭제</button>
+        </div>
+    )
+}
+
+function UserList2 ({users, onRemove, onToggle}) {
+    return(
+        <>
+            {
+             users.map(
+                (user) => (
+                    <User 
+                        key={user.id} 
+                        user={user} 
+                        onRemove={onRemove} 
+                        onToggle={onToggle}
+                    />
+                )
+             )
+            }
+        </>
+    )
+}

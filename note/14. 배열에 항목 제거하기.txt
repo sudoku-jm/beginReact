@@ -1,0 +1,178 @@
+(UserList2.js , CreateUser.js)
+
+UserList2.js에서  
+function UserList2 ({users, onRemove}) {
+
+    return(
+        <>
+            {
+             users.map(
+                (user,index) => (
+                    <User key={index} user={user} onRemove={onRemove} />
+                )
+             )
+            }
+        </>
+    )
+}
+
+onRemove라는 props를 추가.
+
+User에도 onRemove라는 props를 받아와
+button 삭제 추가한다
+<button onClick={()=>onRemove(user.id)}>삭제</button>
+
+click할 때 해당 리스트의 id값을 넣어준다.
+
+user.id, user.username 같이 쓰는게 길 경우
+비구조할당으로 미리 추출해서 써준다.
+
+function User({user, onRemove}){
+    const {username, email, id} = user;
+    return(
+        <div>
+            <b>{username}</b> <span>{email}</span>
+            <button onClick={()=>onRemove(id)}>삭제</button>
+        </div>
+    )
+}
+
+--
+주의!
+onClick={onRemove(id)} 로 쓰지않는다.
+렌더링 되면서 바로 실행되버림.
+
+--
+remove할때에도 불변성을 지켜주면서 지켜줘야한다.
+그때 filter라는 함수를 사용한다.
+
+특정 조건이 만족하는 것만 추출해서 새로운 배열을 만들어준다.
+(App.js)
+
+//삭제
+const onRemove = id => {
+  setUsers(user.filter(user => user.id !== id));
+}
+
+onRemove에서 받은 id 매개변수와 
+list의 user.id 와 다른 리스트들만 뽑아
+새로운 리스트를 만들어 줬다.
+==
+import React, {useRef, useState} from 'react';
+import CreateUser from './CreateUser';
+import UserList2 from './UserList2';
+
+
+const App = () => {
+  const [inputs, setInputs] = useState({
+    username : '',
+    email : ''
+  });
+  const {username, email} = inputs;
+
+  const onChange = e => {
+    const {name, value} = e.target;
+    setInputs({
+      ...inputs,
+      [name] : value
+    })
+  }
+
+
+  const [users,setUsers] = useState([
+    {
+        id:1,
+        username:'velopert',
+        email : 'public.velopoert@gamil.com'
+    },
+    {
+        id:2,
+        username:'tester',
+        email : 'tester@example.com'
+    },
+    {
+        id:3,
+        username:'liz',
+        email : 'liz@example.com'
+    },
+]);
+
+const nextId = useRef(4);
+
+//추가
+const onCreate = () => {
+
+  //1. 새로운 user 객체를 만들어준다
+  const user = {
+    id : nextId.current,
+    // ...inputs
+    username,
+    email,
+  }
+ //2. 기존 배열을 복사해서 새롭게 만든 객체를 추가한다.
+  // setUsers([...users, user]);
+
+  //2. concat 함수 사용하기로도 객체 추가할 수 있다.
+  setUsers(users.concat(user));
+  
+  //3. input 빈값
+  setInputs({
+    username :'',
+    email :''
+  })
+
+
+  nextId.current += 1 ;
+
+}
+
+//삭제
+const onRemove = id => {
+  setUsers(users.filter(user => user.id !== id));
+}
+
+
+  return (
+    <>
+      <CreateUser 
+        username={username} 
+        email={email} 
+        onChange={onChange} 
+        onCreate={onCreate} 
+      />
+      <UserList2 users={users} onRemove={onRemove}/>
+    </>
+  );
+};
+
+export default App;
+
+--
+import React from 'react'
+
+function User({user, onRemove}){
+    const {username, email, id} = user;
+    return(
+        <div>
+            <b>{username}</b> <span>{email}</span>
+            <button onClick={()=>onRemove(id)}>삭제</button>
+        </div>
+    )
+}
+
+function UserList2 ({users, onRemove}) {
+
+    return(
+        <>
+            {
+             users.map(
+                (user,index) => (
+                    <User key={index} user={user} onRemove={onRemove} />
+                )
+             )
+            }
+        </>
+    )
+}
+
+export default UserList2;

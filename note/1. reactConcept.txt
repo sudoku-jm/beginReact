@@ -1,0 +1,74 @@
+React
+https://slides.com/woongjae/react2021
+
+
+
+https://slides.com/woongjae/react2021
+https://github.com/xid-mark/what-is-react
+https://github.com/xid-mark/tic-tac-toe
+https://github.com/xid-mark/react2021
+
+
+react?
+Only Rendering & update
+Component Based Development
+    독립적인 코드 블럭
+Virtual Development 
+    react에서 Dom을 다룬다
+JSX
+    치환되는 템플릿이 아니라, JS로 transpile되는 문법.(Babel,Typescript)
+CSR&SSR
+    클라이언트 사이드 랜더링 / 서버 사이드 랜더링
+
+
+npm trends 사이트에서 사용량 확인가능.
+
+---
+Component?
+
+<!-- HTMLElement -->
+<img src="이미지 주소"/>
+<button class="클래스 이름">버튼</button>
+
+<!-- 내가 만든 컴포넌트 -->
+<내가지은이름 name="Mark"/>
+<내가지은이름 prop={false}>내용</내가지은이름>
+
+- src, class, name, props 밖에서 넣어주는 데이터
+- 문서(HTML), 스타일(CSS), 동작(JS) 를 합쳐서 내가 만든 일종의 태그
+
+
+---
+Component Tree => DOM Tree
+---
+Why Virtual DOM ? 
+가상의 DOM?
+
+DOM 을 직접 제어하는 경우
+    바뀐 부분만 정확히 바꿔야 한다.
+DOM 을 직접 제어하지 않는 경우
+    가상의 돔 트리를 사용해서,
+    이전 상태와 이후 상태를 비교하여,
+    바뀐 부분을 찾아내서 자동으로 바꾼다.
+---
+<CSR>
+React Client Side Rendering
+
+    Server Sending Response to Browser
+    -> Browser Downloads JS 
+    -> Browser executes React 
+    -> page Now Viewable and Interactable 전부 다운받고나서 보임.
+
+JS 가 전부 다운로드 되어 리액트 애플리케이션이 정상 실행되기 전까지는 화면이 보이지 않음.
+JS 가 전부 다운로드 되어 리액트 애플리케이션이 정상 실행된 후, 화면이 보이면서 유저가 인터렉션 가능
+
+<SSR>
+React Server Side Rendering
+
+    Server Sending Ready to be rendered HTML Response to Browser
+    -> Browser Renders the page. Now Viewable. and Browser Downloads JS 찰나에 미리 랜더링 된것을 먼저 보고 그때 JS 앱 다운.
+    -> Browser executes React   리액트 동작
+    -> Page Now Interactable 동작.
+
+JS 가 전부 다운로드 되지 않아도,일단 화면은 보이지만 유저가 사용 할 수 없음.
+JS 가 전부 다운로드 되어 리액트 애플리케이션이 정상 실행된 후, 유저가 사용 가능
