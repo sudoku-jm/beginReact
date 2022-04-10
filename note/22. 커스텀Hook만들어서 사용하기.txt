@@ -1,0 +1,174 @@
+컴포넌트를 만들다보면 반복되는 로직이 발생한다.
+ const onChange = (e) => {
+    const {name, value} = e.target;
+    setInputs ({ ...inputs,  [name] : value, })
+}
+
+이런 자주쓰는 로직.
+input을 관리하는 커스텀 hook.
+
+ 리액트 내장된 Hook 몇가지를 불러온다.
+ (useInputs2.js)
+
+import {useState, useCallback} from 'react';
+
+function useInputs(initialForm) {
+    //파라미터 : initialForm 에서 관리하는 초기값
+    const [form, setForm] = useState(initialForm);
+    //form 상태 초기화는 initialForm 에서 관리하는 초기값
+
+    //onChange
+    const onChange = useCallback( e => {
+        const {name ,value} = e.target;
+        //form 업데이트
+        setForm(form => ({...form, [name] : value}) );
+    },[]);
+
+    //form 초기화 
+     //초기값으로 다시 초기화.
+    const reset = useCallback(() => setForm(initialForm),[initialForm]); 
+
+    //만들었던거 내보냄.
+    return [form, onChange, reset];
+}
+
+//다른곳에서 사용할 수 있게 export.
+export default useInputs;
+==
+(App.js)
+
+reducer에서 
+
+case 'CHANGE_INPUT' : 
+    return {
+    ...state, //기존 상태 들고오고
+    inputs : {//inputs의 값을 덮어쓴다. (불변성을 지키기 위해)
+        ...state.inputs, 
+        [action.name] : action.value // 초기값의 inputs안의 특정값을 바꾼다.
+    }
+};
+
+해당 액션은 더이상 관리 안해줘도 된다.
+
+
+initialState에서
+
+inputs : {
+    username : '',
+    email : ''
+  },
+
+  도 더이상 관리할 필요 없다.
+
+
+//onChange이벤트
+  const onChange = useCallback(e => {
+    const {name, value} = e.target;
+    dispatch({
+      type : 'CHANGE_INPUT', //액션
+      name,
+      value
+    })
+  },[]);
+
+App.js에 있던 onChange도 필요없다.
+
+ const {username, email} = state.inputs;
+ 삭제
+--
+
+  import useInputs from './useInputs';
+불러온다.
+
+ //useInputs에서 들고온다
+  const [form, onChange, reset] = useInputs({
+    username : '',
+    email : '',
+  });
+  const {username, email} = form;
+
+
+==============
+useState가 아닌 reducer를 가지고 구현해보기
+(답)
+https://gist.github.com/velopert/e0d5a027f60a7368b2bb6f9277e3f742
+
+
+//reduce ?
+//배열.reduce((누적값, 현잿값, 인덱스, 요소) => { return 결과 }, 초깃값);
+
+  https://velog.io/@johnque/Javascript-reduce
+
+  만약 Object.keys(state)를 통해 return되는 값이 ["username", "email"]이라고 가정
+여기에 reduce를 사용하게 되면, acc의 초기값이 {}이 되는데, {}["username"] = ''; 이렇게 되버리니 조금 이해가 안 되고 의아한 부분이 발생
+--
+이 부분은 이렇게 보면 됨
+
+const a = {};
+a["username"] = '';
+console.log(a);
+//출력 : {"username" : ""}
+a["email"] = '';
+console.log(a);
+//출력 : {"username" : "", "email" : ""}
+--
+
+import {useReducer, useCallback} from 'react';
+
+function reducer(state, action){
+    switch (action.type){
+        //CHANGE
+        case 'CHANGE':
+            return{
+                ...state,
+                [action.name] : action.value
+            };
+        //RESET
+        case 'RESET' : 
+        //Object.keys(obj) – 객체의 키만 담은 배열을 반환합니다.
+
+        //reduce ?
+        //배열.reduce((누적값, 현잿값, 인덱스, 요소) => { return 결과 }, 초깃값);
+
+            return Object.keys(state).reduce((acc, current) => 
+            //acc 누산기
+            //current : state로 들어오는 값
+                { acc[current] = '';  
+                return acc; //{username : '', email : ''}
+             }, {});
+        default :
+             return state;
+    }
+}
+
+
+function useInputs2(initialForm) {
+    //파라미터 : initialForm 에서 관리하는 초기값
+    //form 상태 초기화는 initialForm 에서 관리하는 초기값
+    // const [form, setForm] = useState(initialForm);
+    const [form, dispatch] = useReducer(reducer,initialForm);
+
+    //onChange
+    const onChange = useCallback( e => {
+        const {name ,value} = e.target;
+        //form 업데이트
+        // setForm(form => ({...form, [name] : value}) );
+        dispatch({
+            type : 'CHANGE',
+            name,
+            value
+        })
+    },[]);
+
+    //form 초기화 
+     //초기값으로 다시 초기화.
+    const reset = useCallback(() => 
+        dispatch({type : 'RESET', })
+    ,[initialForm]); 
+
+    //만들었던거 내보냄.
+    return [form, onChange, reset];
+}
+
+//다른곳에서 사용할 수 있게 export.
+export default useInputs2;

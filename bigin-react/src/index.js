@@ -4,11 +4,13 @@ import './index.css';
 import App from './App';
 // import Counter2 from './Counter2';
 import reportWebVitals from './reportWebVitals';
+import ContextSample from './ContextSample';
 
 ReactDOM.render(
   <React.StrictMode>
     <App />
     {/* <Counter2/> */}
+    {/* <ContextSample/> */}
   </React.StrictMode>,
   document.getElementById('root')
 );

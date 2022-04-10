@@ -1,6 +1,6 @@
-import React, {useRef, useReducer, useMemo, useCallback, createContext} from 'react';
-import CreateUser4 from './CreateUser4';
-import UserList5 from './UserList5';
+import React, {useRef, useReducer, useMemo, useCallback} from 'react';
+import CreateUser3 from './CreateUser3';
+import UserList4 from './UserList4';
 import useInputs from './useInputs';
 
 function counterActiveUsers(users){
@@ -69,8 +69,6 @@ function reducer(state, action){
   }
 }
 
-export const UserDispatch = createContext(null);
-
 const App = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -97,23 +95,40 @@ const App = () => {
     });
     nextId.current += 1; //dispatch후 1올림
     reset(); //호출
-  },[username,email]);  //해당 함수에서 기존 값 의존하는게 있으니 넣어준다.
+  },[username,email,reset]);  //해당 함수에서 기존 값 의존하는게 있으니 넣어준다.
 
+
+  //onToggle이벤트
+  const onToggle = useCallback(id => {
+    dispatch({
+      type : 'TOGGLE_USER',
+      id
+    })
+  },[]);
+
+
+  //onRemove이벤트
+  const onRemove = useCallback(id => {
+    dispatch({
+      type : 'REMOVE_USER',
+      id
+    })
+  },[]);
 
   //활성 사용자 수
   const count = useMemo(() => counterActiveUsers(users),[users])
 
   return(
-    <UserDispatch.Provider value={dispatch}>
-      <CreateUser4 
+    <>
+      <CreateUser3 
         username={username}
         email = {email} 
         onChange = {onChange}
         onCreate = {onCreate}
       />
-      <UserList5 users={users} />
+      <UserList4 users={users} onToggle={onToggle} onRemove={onRemove}/>
       <div>활성 사용자 수 : {count}</div>
-    </UserDispatch.Provider>
+    </>
   )
 }
 

@@ -1,0 +1,89 @@
+(ContextSample.js)
+
+import React, {createContext, useContext} from 'react';
+
+function Child({text}) {
+    return <div>안녕하세요?{text}</div>
+}
+
+function Parent({text}){
+    return <Child text={text}/>
+}
+
+function GrandParent({text}){
+    return <Parent text={text}/>
+}
+
+function ContextSample() {
+    return <GrandParent text="GOOD"/>
+}
+
+export default ContextSample;
+
+--
+ContextSample 에서 바로 Child로 넘기기
+(index.js) 잠깐 수정
+--
+
+const MyContext = createContext('defaultValue');
+
+function Child() {
+    const text = useContext(MyContext);
+    return <div>안녕하세요?{text}</div>
+}
+
+//안녕하세요?defaultValue
+
+
+useContext는 context에 있는 값을 읽어와서 사용할 수 있게 해주는 react내장 Hook
+context값 value를 지정해 주지 않아서 기본
+defaultValue라고 나온다.
+
+
+MyContext값을 지정해주고 싶다면?
+constext를 사용하는 맨 위에 있는 곳(ContextSample)에서
+MyContext안에 있는 Provider라는 것을 사용해야한다.
+여기서 value값 설정.
+
+function ContextSample() {
+    return (
+        <MyContext.Provider value="GOOD">
+            <GrandParent/>
+        </MyContext.Provider>
+    )
+}
+
+---
+import React, {createContext, useContext, useState} from 'react';
+
+const MyContext = createContext('defaultValue');
+
+function Child() {
+    const text = useContext(MyContext);
+    return <div>안녕하세요?{text}</div>
+}
+
+function Parent({text}){
+    return <Child text={text}/>
+}
+
+function GrandParent({text}){
+    return <Parent text={text}/>
+}
+
+function ContextSample() {
+    const [value, setValue] = useState(true);
+
+    return (
+        <MyContext.Provider value={value ? 'GOOD':'BAD'} >
+            <GrandParent/>
+            <button onClick={() => setValue(!value)}>CLICK ME</button>
+        </MyContext.Provider>
+    )
+}
+
+export default ContextSample;
+
+
+이렇게
+context의 값을 계속 바꿀 수 도 있다

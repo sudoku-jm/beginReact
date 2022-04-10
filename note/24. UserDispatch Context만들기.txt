@@ -1,0 +1,85 @@
+(App.js , UserList5.js, CreateUser4.js)
+
+onToggle과 onRemove를 사용하기 위해서는
+<UserList/>를 거쳐서 <User/>에 전달이 되었었다.
+이걸 고치기!
+
+import React, {useRef, useReducer, useMemo, useCallback, createContext} from 'react';
+
+App컴포넌트 위에
+
+export const UserDispatch = createContext(null);
+
+UserDispatch context만들어준다.
+
+
+return(
+    <UserDispatch.Provider value={dispatch}>
+      <CreateUser3 
+        username={username}
+        email = {email} 
+        onChange = {onChange}
+        onCreate = {onCreate}
+      />
+      <UserList5 users={users} onToggle={onToggle} onRemove={onRemove}/>
+      <div>활성 사용자 수 : {count}</div>
+    </UserDispatch.Provider>
+  )
+
+UserDispatch.Provider만들어줌.
+useReducer로 받아온 dispatch를 value로 넣어줌.
+
+(UserList5.js)
+User에서 바로 onToggle, onRemove 사용하게 한다.
+
+App.js에 있는 onToggle, onRemove를 지운다.
+컴포넌트로 내려주는 onToggle={onToggle} onRemove={onRemove} 도 지운다.
+
+props로 받아오는 것도 지운다.
+
+App.js에 있던 onRemove,onToggler 함수는 User에 넣어준다.
+
+
+import React, {useContext} from 'react';
+import {UserDispatch} from './App';
+
+useContext 훅을 사용하면 컴포넌트 내부에서 조회할 수 있다.
+
+const dispatch = useContext(UserDispatch);
+
+--
+import React, {useContext} from 'react';
+import {UserDispatch} from './App';
+
+const User = React.memo(function User({user}){
+    const {username, email, id, active} = user;
+
+    const dispatch = useContext(UserDispatch);
+    
+    return(
+        <div>
+            <b 
+            style={{
+                color : active ? 'green' : 'black',
+                cursor : 'pointer'
+            }}
+            onClick={() => dispatch({
+                type : 'TOGGLE_USER',
+                id
+            })}
+            >
+                {username}
+            </b> 
+            &nbsp;
+            <span>{email}</span>
+            <button 
+            onClick={() => dispatch({
+                type : 'REMOVE_USER',
+                id
+            })}
+            >
+                삭제
+            </button>
+        </div>
+    )
+});
